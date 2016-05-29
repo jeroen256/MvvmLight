@@ -1,4 +1,6 @@
 ﻿using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Messaging;
 using MvvmLight.Model;
 
 namespace MvvmLight.ViewModel
@@ -12,6 +14,8 @@ namespace MvvmLight.ViewModel
     public class MainViewModel : ViewModelBase
     {
         private readonly IDataService _dataService;
+
+        public RelayCommand ShowView2Command { private set; get; }
 
         /// <summary>
         /// The <see cref="WelcomeTitle" /> property's name.
@@ -36,11 +40,16 @@ namespace MvvmLight.ViewModel
             }
         }
 
+        private string _html;
+        public string Html { get { return _html; } set { Set(ref _html, value); } }
+
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
         public MainViewModel(IDataService dataService)
         {
+            ShowView2Command = new RelayCommand(ShowView2CommandExecute);
+
             _dataService = dataService;
             _dataService.GetData(
                 (item, error) =>
@@ -53,6 +62,23 @@ namespace MvvmLight.ViewModel
 
                     WelcomeTitle = item.Title;
                 });
+
+            _dataService.GetHtml(
+                (html, error) =>
+                {
+                    if (error != null)
+                    {
+                        // Report error here
+                        return;
+                    }
+
+                    Html = html;
+                });
+        }
+
+        public void ShowView2CommandExecute()
+        {
+            Messenger.Default.Send(new NotificationMessage("ShowView2"));
         }
 
         ////public override void Cleanup()

@@ -10,6 +10,15 @@ namespace MvvmLight.Model
 
             var item = new DataItem("Welcome to MVVM Light");
             callback(item, null);
+
+        }
+
+        public void GetHtml(Action<String, Exception> callback)
+        {
+            // Use this to connect to the actual data service
+
+            string html = "Welcome to <b>MVVM</b> Light";
+            callback(html, null);
         }
     }
 }

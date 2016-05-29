@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using MvvmLight.ViewModel;
+using GalaSoft.MvvmLight.Messaging;
 
 namespace MvvmLight
 {
@@ -14,7 +15,17 @@ namespace MvvmLight
         public MainWindow()
         {
             InitializeComponent();
+            Messenger.Default.Register<NotificationMessage>(this, NotificationMessageReceived);
             Closing += (s, e) => ViewModelLocator.Cleanup();
+        }
+
+        private void NotificationMessageReceived(NotificationMessage msg)
+        {
+            if (msg.Notification == "ShowView2")
+            {
+                var view2 = new MahappsWindow();
+                view2.Show();
+            }
         }
     }
 }

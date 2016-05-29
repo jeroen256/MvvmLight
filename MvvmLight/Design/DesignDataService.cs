@@ -12,5 +12,10 @@ namespace MvvmLight.Design
             var item = new DataItem("Welcome to MVVM Light [design]");
             callback(item, null);
         }
+
+        public void GetHtml(Action<string, Exception> callback)
+        {
+            callback("html <b>design</b>", null);
+        }
     }
 }

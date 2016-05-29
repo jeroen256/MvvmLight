@@ -8,5 +8,6 @@ namespace MvvmLight.Model
     public interface IDataService
     {
         void GetData(Action<DataItem, Exception> callback);
+        void GetHtml(Action<String, Exception> callback);
     }
 }
