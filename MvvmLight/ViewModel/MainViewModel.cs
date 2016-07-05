@@ -1,7 +1,11 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
+using MahApps.Metro.Controls.Dialogs;
+using System.Threading.Tasks;
 using MvvmLight.Model;
+using System.ComponentModel;
+using MahApps.Metro.Controls;
 
 namespace MvvmLight.ViewModel
 {
@@ -13,44 +17,29 @@ namespace MvvmLight.ViewModel
     /// </summary>
     public class MainViewModel : ViewModelBase
     {
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private readonly IDataService _dataService;
+        private readonly IDialogCoordinator _dialogCoordinator;
 
-        public RelayCommand ShowView2Command { private set; get; }
-
-        /// <summary>
-        /// The <see cref="WelcomeTitle" /> property's name.
-        /// </summary>
+        public RelayCommand ShowSettingsWindow { private set; get; }
+        public RelayCommand ShowDialog { get { return _showDialog ?? (_showDialog = new RelayCommand(ExecuteShowDialog)); } } RelayCommand _showDialog;
+        public RelayCommand ShowProgressDialog { get { return _showProgressDialog ?? (_showProgressDialog = new RelayCommand(ShowProgressDialogCommandExecute)); } } RelayCommand _showProgressDialog;
+        public RelayCommand<MetroWindow> LoadCommand { private set; get; }
+        MetroWindow metroWindow;
+        public RelayCommand<CancelEventArgs> CloseCommand { private set; get; }
         public const string WelcomeTitlePropertyName = "WelcomeTitle";
-
-        private string _welcomeTitle = string.Empty;
-
-        /// <summary>
-        /// Gets the WelcomeTitle property.
-        /// Changes to that property's value raise the PropertyChanged event. 
-        /// </summary>
-        public string WelcomeTitle
+        public string WelcomeTitle { get { return _welcomeTitle; } set { Set(ref _welcomeTitle, value); } } string _welcomeTitle;
+        public string Html { get { return _html; } set { Set(ref _html, value); } } string _html;
+        public MainViewModel(IDataService dataService, IDialogCoordinator dialogCoordinator)
         {
-            get
-            {
-                return _welcomeTitle;
-            }
-            set
-            {
-                Set(ref _welcomeTitle, value);
-            }
-        }
-
-        private string _html;
-        public string Html { get { return _html; } set { Set(ref _html, value); } }
-
-        /// <summary>
-        /// Initializes a new instance of the MainViewModel class.
-        /// </summary>
-        public MainViewModel(IDataService dataService)
-        {
-            ShowView2Command = new RelayCommand(ShowView2CommandExecute);
-
+            log.Info("Starting MainViewModel.");
+            _dialogCoordinator = dialogCoordinator;
             _dataService = dataService;
+
+            ShowSettingsWindow = new RelayCommand(ExecuteShowSettingsWindow);
+            LoadCommand = new RelayCommand<MetroWindow>(LoadCommandExecute);
+            CloseCommand = new RelayCommand<CancelEventArgs>(CloseCommandExecute);
+
             _dataService.GetData(
                 (item, error) =>
                 {
@@ -76,16 +65,82 @@ namespace MvvmLight.ViewModel
                 });
         }
 
-        public void ShowView2CommandExecute()
+        public void ExecuteShowSettingsWindow()
         {
-            Messenger.Default.Send(new NotificationMessage("ShowView2"));
+            var settingsWindow = new SettingsWindow();
+            settingsWindow.ShowDialog();
         }
 
-        ////public override void Cleanup()
-        ////{
-        ////    // Clean up if needed
+        string s;
+        async void ExecuteShowDialog()
+        {
+            var result = await _dialogCoordinator.ShowMessageAsync(this, "Teste", "Teste", MessageDialogStyle.AffirmativeAndNegative, new MetroDialogSettings
+            {
+                AffirmativeButtonText = "OK",
+                NegativeButtonText = "CANCELAR",
+                AnimateShow = true,
+                AnimateHide = false
+            });
 
-        ////    base.Cleanup();
-        ////}
+            if (result == MessageDialogResult.Negative)
+                s = "negative";
+            else { s = "not negative";  }
+        }
+        async void ShowProgressDialogCommandExecute()
+        {
+            var result = await _dialogCoordinator.ShowProgressAsync(this, "Even geduld..", "Bezig met iets", true);
+            result.Canceled += delegate { result.CloseAsync(); };
+            result.SetProgress(0.3);
+            await Task.Delay(1000);
+            result.SetProgress(0.5);
+            await Task.Delay(1000);
+            result.SetProgress(0.7);
+            await Task.Delay(1000);
+            result.SetProgress(1);
+            if (result.IsOpen) { await result.CloseAsync(); }
+            
+        }
+
+        async void LoadCommandExecute(MetroWindow metroWindow)
+        {
+            this.metroWindow = metroWindow;
+            var result = await _dialogCoordinator.ShowProgressAsync(this, "Even geduld..", "Bezig met iets", true);
+            result.Canceled += delegate { result.CloseAsync(); };
+            result.SetProgress(0.3);
+            await Task.Delay(100);
+            result.SetProgress(0.5);
+            await Task.Delay(100);
+            result.SetProgress(0.7);
+            await Task.Delay(100);
+            result.SetProgress(1);
+            await result.CloseAsync();
+        }
+
+        bool CloseCommandCanExecute = false;
+        async void CloseCommandExecute(CancelEventArgs e)
+        {
+            if (CloseCommandCanExecute == false) {
+                e.Cancel = true;
+                var result = await _dialogCoordinator.ShowProgressAsync(this, "Even geduld..", "Bezig met afsluiten", true);
+                result.Canceled += delegate { result.CloseAsync(); };
+                result.SetProgress(0.3);
+                await Task.Delay(100);
+                result.SetProgress(0.5);
+                await Task.Delay(100);
+                result.SetProgress(0.7);
+                await Task.Delay(100);
+                result.SetProgress(1);
+                await result.CloseAsync();
+                CloseCommandCanExecute = true;
+                metroWindow.Close();
+            }
+        }
+
+        //public override void Cleanup()
+        //{
+        //    // Clean up if needed
+        //    s = "cleaning";
+        //    base.Cleanup();
+        //}
     }
 }

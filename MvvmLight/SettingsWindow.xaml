@@ -1,17 +1,18 @@
-﻿<Controls:MetroWindow x:Class="MvvmLight.MahappsWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
-        xmlns:wpf="clr-namespace:TheArtOfDev.HtmlRenderer.WPF;assembly=HtmlRenderer.WPF"
-        xmlns:ignore="http://www.galasoft.ch/ignore"
-        mc:Ignorable="d ignore"
+﻿<Controls:MetroWindow x:Class="MvvmLight.SettingsWindow"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                      xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+                      xmlns:wpf="clr-namespace:TheArtOfDev.HtmlRenderer.WPF;assembly=HtmlRenderer.WPF"
+                      xmlns:ignore="http://www.galasoft.ch/ignore"
+                      mc:Ignorable="d ignore"
                       GlowBrush="{DynamicResource AccentColorBrush}"
-        Height="300"
-        Width="300"
-        Title="MVVM Light Application"
-        DataContext="{Binding Main, Source={StaticResource Locator}}" ResizeMode="CanResizeWithGrip">
+                      WindowStartupLocation="CenterScreen"
+                      Height="600"
+                      Width="800"
+                      Title="Instellingen"
+                      DataContext="{Binding Main, Source={StaticResource Locator}}" ResizeMode="CanResizeWithGrip" Icon="Resources/icon.ico">
 
     <Window.Resources>
         <ResourceDictionary>

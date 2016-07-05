@@ -1,31 +1,30 @@
-﻿using System.Windows;
-using MvvmLight.ViewModel;
-using GalaSoft.MvvmLight.Messaging;
+﻿using MahApps.Metro.Controls.Dialogs;
+using System.Threading.Tasks;
+using System.Timers;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace MvvmLight
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Description for Mahapps.
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
         /// <summary>
-        /// Initializes a new instance of the MainWindow class.
+        /// Initializes a new instance of the Mahapps class.
         /// </summary>
         public MainWindow()
         {
             InitializeComponent();
-            Messenger.Default.Register<NotificationMessage>(this, NotificationMessageReceived);
-            Closing += (s, e) => ViewModelLocator.Cleanup();
         }
 
-        private void NotificationMessageReceived(NotificationMessage msg)
+        private void MetroWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            if (msg.Notification == "ShowView2")
-            {
-                var view2 = new MahappsWindow();
-                view2.Show();
-            }
+            // Workaround for bug: Dialog overlapping titlebar https://github.com/MahApps/MahApps.Metro/issues/2109
+            var overlayBox = this.Template.FindName("PART_OverlayBox", this) as FrameworkElement;
+            Grid.SetRow(overlayBox, 1);
         }
+
     }
 }

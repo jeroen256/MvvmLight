@@ -11,6 +11,7 @@
 
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
+using MahApps.Metro.Controls.Dialogs;
 using Microsoft.Practices.ServiceLocation;
 using MvvmLight.Model;
 
@@ -38,6 +39,7 @@ namespace MvvmLight.ViewModel
                 SimpleIoc.Default.Register<IDataService, DataService>();
             }
 
+            SimpleIoc.Default.Register<IDialogCoordinator, DialogCoordinator>();
             SimpleIoc.Default.Register<MainViewModel>();
         }
 
